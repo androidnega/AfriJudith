@@ -8,7 +8,10 @@ $cls    = static fn (string $name): string => $active === $name ? ' class="activ
 ?>
 <header class="site-header">
     <a href="<?= $e($url('/')) ?>" class="brand" aria-label="afriJudith.online home">
-        <img src="<?= $e($asset('img/logo.png')) ?>" alt="" class="brand-mark">
+        <img src="<?= $e($asset('img/judith-afriyie-logo.png')) ?>"
+             alt="Judith Afriyie logo"
+             width="40" height="40"
+             class="brand-mark">
         <span class="brand-text">
             <span class="brand-text-soft">afri</span><span class="brand-text-bold">Judith</span><span class="brand-text-soft">.online</span>
         </span>

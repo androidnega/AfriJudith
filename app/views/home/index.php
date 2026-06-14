@@ -16,7 +16,10 @@
             <span class="ring ring-1"></span>
             <span class="ring ring-2"></span>
             <span class="ring ring-3"></span>
-            <img src="<?= $e($asset('img/logo.png')) ?>" alt="afriJudith.online" class="landing-logo">
+            <img src="<?= $e($asset('img/judith-afriyie-logo.png')) ?>"
+                 alt="Judith Afriyie — Data Analyst & Web Developer"
+                 width="160" height="160"
+                 class="landing-logo">
         </div>
 
         <span class="pill">

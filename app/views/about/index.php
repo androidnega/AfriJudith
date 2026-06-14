@@ -51,7 +51,10 @@
             <div class="about-logo">
                 <span class="ring ring-1"></span>
                 <span class="ring ring-2"></span>
-                <img src="<?= $e($asset('img/logo.png')) ?>" alt="" class="logo-art">
+                <img src="<?= $e($asset('img/judith-afriyie-logo.png')) ?>"
+                     alt="Judith Afriyie — Data Analyst & Web Developer"
+                     width="320" height="320"
+                     class="logo-art">
             </div>
             <div class="stats">
                 <?php foreach ($stats as $st): ?>

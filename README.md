@@ -40,11 +40,11 @@ afrijudith.online/
 │       └── errors/404.php
 ├── public/
 │   └── assets/
-│       ├── img/logo.png       Transparent logo (afriJudith.online)
-│       ├── css/style.css      Design system + responsive UI
-│       └── js/main.js         Preloader + scroll reveal
+│       ├── img/judith-afriyie-logo.png   Brand mark (512x512, transparent)
+│       ├── css/style.css                 Design system + responsive UI
+│       └── js/main.js                    Preloader + scroll reveal
 └── tools/
-    └── make_transparent.php   One-off: strip white bg from a logo source
+    └── optimize_image.php    CLI: resize + slugify + (optional) white-to-alpha
 ```
 
 ## Running locally
@@ -87,13 +87,42 @@ Generic shape: `/<controller>/<action>/<...params>` → `App\Controllers\<Name>C
 No other layer needs to change. The controller, view, router, and asset
 pipeline already speak the same shape.
 
-## Regenerating the logo
+## Adding images (naming + sizing convention)
 
-If the brand mark ever changes, drop the source image somewhere and run:
+Every image that lands in `public/assets/img/` should go through
+`tools/optimize_image.php` first. It enforces three rules in one shot:
+
+1. **SEO-friendly filename** — kebab-case ASCII slug, descriptive
+   (subject → context → purpose). Google indexes these directly.
+2. **Sensible dimensions** — 512px on the longer edge by default
+   (logos, avatars, icons). Bump `--max=1600` for screenshots/photos.
+3. **Optimised encoding** — PNG with full compression for anything
+   with transparency, JPEG quality 85 for photos.
 
 ```bash
-php tools/make_transparent.php <path/to/source.png-or-jpg> public/assets/img/logo.png
+# Logo: turn a source JPEG with a white background into a transparent PNG
+php tools/optimize_image.php /path/to/source.jpg judith-afriyie-logo \
+     --max=512 --bg=transparent
+
+# Photo / screenshot
+php tools/optimize_image.php /path/to/screenshot.jpg sales-dashboard-screenshot \
+     --max=1600 --format=jpg
 ```
 
-The script removes near-white pixels and produces an anti-aliased
-transparent PNG.
+Naming examples to follow:
+
+| Bad                 | Good                                  |
+| ------------------- | ------------------------------------- |
+| `IMG_0421.jpg`      | `judith-afriyie-portrait.jpg`         |
+| `logo (final).png`  | `judith-afriyie-logo.png`             |
+| `screenshot1.png`   | `sales-dashboard-screenshot.png`      |
+| `pic.webp`          | `react-portfolio-thumbnail.webp`      |
+
+Reference the output in your view with descriptive `alt` text plus
+explicit `width`/`height` (Core Web Vitals), e.g.:
+
+```php
+<img src="<?= $e($asset('img/judith-afriyie-logo.png')) ?>"
+     alt="Judith Afriyie — Data Analyst & Web Developer"
+     width="160" height="160">
+```
