@@ -40,12 +40,17 @@
 
 html {
     scroll-behavior: smooth;
-    background: var(--bg-0); /* prevents white flash below short pages on mobile */
+    /* Solid fallback so iOS overscroll / pre-paint never flashes white. */
+    background: var(--bg-0);
 }
 
+/* The .aurora layer (position: fixed; z-index: -1) IS our background.
+   Keeping body transparent stops it from painting a solid color on top
+   of the aurora — that was causing a visible two-tone seam on mobile
+   wherever body height was shorter than the viewport. */
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg-0);
+    background: transparent;
     color: var(--text);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
