@@ -378,11 +378,18 @@ body.is-landing {
    `position: fixed` trick keeps iOS from drifting and from collapsing
    the URL bar, while preserving the user's scroll position via inline
    `top` set in JS. */
+/* Drawer-open scroll lock.
+   We use plain `overflow: hidden` on <html> and <body> instead of
+   `position: fixed` on the body. `position: fixed` on the body is a
+   common scroll-lock trick, but on iOS it has a nasty side effect:
+   taps on links inside a `position: fixed` + transformed drawer can
+   stop dispatching default navigation, which is exactly what made
+   "the menu opens but links don't go anywhere" on phones. The
+   simpler overflow lock keeps every tap → navigate path intact. */
+html.nav-open,
 body.nav-open {
-    position: fixed;
-    inset-inline: 0;
-    width: 100%;
     overflow: hidden;
+    overscroll-behavior: contain;
 }
 /* When the drawer is open, the sticky header's blur filter can stack
    with the backdrop on iOS and leak onto the drawer, making the menu
