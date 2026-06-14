@@ -38,7 +38,10 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+    scroll-behavior: smooth;
+    background: var(--bg-0); /* prevents white flash below short pages on mobile */
+}
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -1302,27 +1305,29 @@ a.info-value:hover { color: var(--brand-2); }
         color: #02060f !important;
     }
 
-    /* On phones the landing must be allowed to scroll if content
-       (logo + title + tagline + 5 social pills) is taller than the
-       viewport. We drop the rigid 100dvh height pin and let it grow. */
+    /* On phones the landing flows naturally from the top — no forced
+       100dvh, no flex centring. The aurora layer paints the dark
+       gradient over the full viewport, so any "extra" space below
+       the hero stays visually consistent rather than looking like a
+       blank trailing area. */
     body.is-landing {
         height: auto;
-        min-height: 100vh;
-        min-height: 100dvh;
+        min-height: 0;
         overflow-x: hidden;
         overflow-y: auto;
     }
     .page-landing {
+        display: block;
         height: auto;
-        min-height: calc(100dvh - var(--header-h));
-        padding-top: 28px;
-        padding-bottom: 36px;
+        min-height: 0;
+        padding: 22px 0 40px;
     }
-    .landing-inner       { gap: 14px; }
-    .landing-logo-stage  { width: clamp(150px, 38vw, 200px); margin-bottom: 4px; }
-    .landing-title       { font-size: clamp(1.9rem, 6.5vw, 2.6rem); }
-    .landing-tagline     { font-size: 0.95rem; max-width: 92%; }
-    .landing-socials     { gap: 6px; }
+    .landing              { display: block; }
+    .landing-inner        { gap: 14px; margin: 0 auto; }
+    .landing-logo-stage   { width: clamp(150px, 38vw, 200px); margin-bottom: 4px; }
+    .landing-title        { font-size: clamp(1.9rem, 6.5vw, 2.6rem); }
+    .landing-tagline      { font-size: 0.95rem; max-width: 92%; }
+    .landing-socials      { gap: 6px; }
 
     /* The rest of the small-screen tuning */
     .section         { padding: 64px 0; }

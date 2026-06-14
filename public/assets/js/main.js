@@ -76,31 +76,47 @@
         mql.addEventListener ? mql.addEventListener('change', onChange) : mql.addListener(onChange);
     }
 
-    /* Reveal-on-scroll using IntersectionObserver */
+    /* ---------------------------------------------------------
+       Reveal-on-scroll using IntersectionObserver
+       ---------------------------------------------------------
+       Above-the-fold hero content (the landing screen) is intentionally
+       NOT in this list — it must always be visible on first paint, even
+       if the observer hasn't fired yet (which happened on phones where
+       the centred layout left some hero items just below the trigger
+       margin and they stayed at opacity: 0 forever).
+       --------------------------------------------------------- */
     const revealTargets = document.querySelectorAll([
         '.hero-copy', '.hero-visual',
         '.page-hero-grid > *', '.about-aside',
         '.card', '.skill', '.work',
         '.contact-card', '.contact-info', '.contact-form',
-        '.section-head', '.landing-inner > *'
+        '.section-head'
     ].join(', '));
     revealTargets.forEach((el) => el.classList.add('reveal'));
 
+    /* Generous trigger so phones with short viewports always pick up
+       items even before any scroll happens. */
+    const revealOptions = { threshold: 0.05, rootMargin: '0px 0px 10% 0px' };
+
+    const showAll = () => revealTargets.forEach((el) => el.classList.add('in'));
+
     if ('IntersectionObserver' in window) {
-        const io = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('in');
-                        io.unobserve(entry.target);
-                    }
-                });
-            },
-            { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
-        );
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in');
+                    io.unobserve(entry.target);
+                }
+            });
+        }, revealOptions);
         revealTargets.forEach((el) => io.observe(el));
+
+        /* Safety net: anything still hidden after 1.2s — e.g. the tab
+           was backgrounded so observers paused — gets revealed anyway,
+           so visitors never see a blank section. */
+        window.setTimeout(showAll, 1200);
     } else {
-        revealTargets.forEach((el) => el.classList.add('in'));
+        showAll();
     }
 
     /* Smooth-scroll for in-page anchors (browsers that don't honour scroll-behavior) */
