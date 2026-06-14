@@ -6,13 +6,34 @@
 (function () {
     'use strict';
 
-    /* Preloader: hide once everything has painted + minimum dwell time */
-    window.addEventListener('load', () => {
+    /* ---------------------------------------------------------
+       Preloader
+       ---------------------------------------------------------
+       The loader is purely visual (CSS pointer-events: none lets
+       taps pass straight through to the page underneath), but we
+       still want it to disappear promptly. We trigger the hide on
+       whichever fires first: DOMContentLoaded (almost immediate),
+       window load (slow networks / external fonts), or a hard
+       2-second cap so a stuck resource never traps the loader on
+       screen.
+       --------------------------------------------------------- */
+    (function preloader() {
         const loader = document.getElementById('loader');
         if (!loader) return;
-        window.setTimeout(() => loader.classList.add('hidden'), 1400);
-        window.setTimeout(() => loader.remove(), 2200);
-    });
+        let hidden = false;
+        const hide = () => {
+            if (hidden) return;
+            hidden = true;
+            loader.classList.add('hidden');
+            window.setTimeout(() => loader.remove(), 700);
+        };
+        if (document.readyState === 'complete') hide();
+        else {
+            document.addEventListener('DOMContentLoaded', () => window.setTimeout(hide, 600));
+            window.addEventListener('load', () => window.setTimeout(hide, 200));
+            window.setTimeout(hide, 2000);
+        }
+    })();
 
     /* ---------------------------------------------------------
        Mobile nav drawer
@@ -54,8 +75,7 @@
             else      unlockBodyScroll();
         };
 
-        toggle.addEventListener('click', (e) => {
-            e.preventDefault();
+        toggle.addEventListener('click', () => {
             setOpen(!nav.classList.contains('open'));
         });
 

@@ -132,6 +132,11 @@ h1, h2, h3, h4 { font-family: 'Sora', 'Inter', sans-serif; line-height: 1.1; let
 
 /* -------------------------------------------------------------
    Preloader
+   -------------------------------------------------------------
+   `pointer-events: none` is critical: without it, the loader's
+   z-index: 9999 makes it absorb every tap during the first ~1.4s
+   while it fades out, which on a phone made the hamburger feel
+   "dead" — taps were hitting the invisible loader, not the button.
    ------------------------------------------------------------- */
 .loader {
     position: fixed;
@@ -143,6 +148,7 @@ h1, h2, h3, h4 { font-family: 'Sora', 'Inter', sans-serif; line-height: 1.1; let
     justify-content: center;
     z-index: 9999;
     gap: 18px;
+    pointer-events: none;
     transition: opacity 0.6s ease, visibility 0.6s ease;
 }
 .loader.hidden { opacity: 0; visibility: hidden; }
