@@ -19,7 +19,9 @@
             <img src="<?= $e($asset('img/judith-afriyie-logo.png')) ?>"
                  alt="Judith Afriyie — Data Analyst & Web Developer"
                  width="160" height="160"
-                 class="landing-logo">
+                 class="landing-logo"
+                 fetchpriority="high"
+                 decoding="async">
         </div>
 
         <span class="pill">

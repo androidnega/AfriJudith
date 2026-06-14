@@ -89,4 +89,49 @@
             target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
     });
+
+    /* ---------------------------------------------------------
+       Mobile FAB — toggle the quick-nav menu.
+       ---------------------------------------------------------
+       The button itself is always visible (CSS controls when),
+       but we only attach handlers if it exists in the DOM.
+       --------------------------------------------------------- */
+    (function mobileFab() {
+        const fab    = document.querySelector('[data-mfab]');
+        if (!fab) return;
+        const toggle = fab.querySelector('[data-mfab-toggle]');
+        const menu   = fab.querySelector('[data-mfab-menu]');
+        if (!toggle || !menu) return;
+
+        const close = () => {
+            if (!fab.classList.contains('is-open')) return;
+            fab.classList.remove('is-open');
+            toggle.setAttribute('aria-expanded', 'false');
+            menu.setAttribute('aria-hidden', 'true');
+            toggle.setAttribute('aria-label', 'Open navigation menu');
+        };
+        const open = () => {
+            fab.classList.add('is-open');
+            toggle.setAttribute('aria-expanded', 'true');
+            menu.setAttribute('aria-hidden', 'false');
+            toggle.setAttribute('aria-label', 'Close navigation menu');
+        };
+
+        toggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fab.classList.contains('is-open') ? close() : open();
+        });
+
+        // Close when a link is tapped (so the menu doesn't linger
+        // during the page transition) and on outside taps / Esc.
+        menu.addEventListener('click', (e) => {
+            if (e.target.closest('a')) close();
+        });
+        document.addEventListener('click', (e) => {
+            if (!fab.contains(e.target)) close();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') close();
+        });
+    })();
 })();

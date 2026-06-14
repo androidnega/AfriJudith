@@ -1436,6 +1436,143 @@ a.info-value:hover { color: var(--brand-2); }
     .landing-socials     { display: none; }
 }
 
+/* -------------------------------------------------------------
+   Mobile FAB — bottom-right quick-nav (phones / tablets only)
+   -------------------------------------------------------------
+   Hidden by default; the @media (max-width: 768px) block below
+   turns it on. Anchored to the bottom-right and lifted with
+   `safe-area-inset` so it clears iPhone home-indicator gestures.
+   ------------------------------------------------------------- */
+.mfab {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    /* On phones the FAB IS the navigation. Hide the inline header
+       links so we don't show two menus side by side. The brand stays
+       visible on the left of the header. */
+    .site-header .nav { display: none; }
+    .site-header { justify-content: flex-start; }
+
+    .mfab {
+        display: block;
+        position: fixed;
+        right: max(16px, env(safe-area-inset-right));
+        bottom: max(20px, env(safe-area-inset-bottom));
+        z-index: 200;
+    }
+
+    .mfab-btn {
+        position: relative;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        background: linear-gradient(135deg, var(--brand), var(--brand-2));
+        color: #02060f;
+        box-shadow:
+            0 14px 30px -8px var(--brand-glow),
+            0 4px 12px rgba(0, 0, 0, 0.35);
+        display: grid;
+        place-items: center;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .mfab-btn:active { transform: scale(0.94); }
+
+    .mfab-icon {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        transition: opacity 0.2s ease, transform 0.25s ease;
+    }
+    .mfab-icon-close { opacity: 0; transform: rotate(-45deg); font-size: 1.3rem; }
+
+    /* Hamburger built from 3 spans — no extra icon font needed for
+       the closed state, so the FAB renders even if FontAwesome is
+       still loading. */
+    .mfab-icon-bars {
+        display: grid;
+        gap: 5px;
+    }
+    .mfab-icon-bars span {
+        display: block;
+        width: 22px;
+        height: 2px;
+        border-radius: 2px;
+        background: #02060f;
+    }
+
+    .mfab.is-open .mfab-icon-bars  { opacity: 0; transform: rotate(45deg); }
+    .mfab.is-open .mfab-icon-close { opacity: 1; transform: rotate(0); }
+    .mfab.is-open .mfab-btn        { transform: rotate(0); }
+
+    .mfab-menu {
+        position: absolute;
+        right: 0;
+        bottom: 72px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        min-width: 200px;
+        padding: 10px;
+        background: rgba(11, 14, 19, 0.92);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--shadow-lg);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(8px) scale(0.96);
+        transform-origin: bottom right;
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+    }
+    .mfab.is-open .mfab-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0) scale(1);
+    }
+
+    .mfab-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 0.92rem;
+        font-weight: 500;
+        transition: background 0.15s ease, color 0.15s ease;
+    }
+    .mfab-link i {
+        width: 18px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.95rem;
+    }
+    .mfab-link:active { background: var(--surface-2); }
+    .mfab-link.is-active {
+        background: rgba(59, 130, 246, 0.16);
+        color: var(--brand-2);
+    }
+    .mfab-link.is-active i { color: var(--brand-2); }
+
+    .mfab-link-cta {
+        margin-top: 4px;
+        background: linear-gradient(120deg, var(--brand), var(--brand-2));
+        color: #02060f;
+    }
+    .mfab-link-cta i { color: #02060f; }
+    .mfab-link-cta.is-active { background: linear-gradient(120deg, var(--brand-2), var(--brand-3)); color: #02060f; }
+
+    /* Make sure footer never sits under the FAB. */
+    .site-footer { padding-bottom: calc(22px + env(safe-area-inset-bottom)); }
+}
+
 /* Reduced motion accessibility */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
