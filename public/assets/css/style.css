@@ -82,7 +82,7 @@ h1, h2, h3, h4, p, a, li, span, button, input, textarea, label {
 /* Stop flex items from blowing out their container. By default flex
    items have min-width: auto which makes them as wide as their content,
    which can force horizontal scroll. */
-.nav, .nav-toggle,
+.nav,
 .hero-grid > *, .page-hero-grid > *,
 .hero-actions > *, .landing-actions > *,
 .cards > *, .work-grid > *, .skills-grid > *,
@@ -297,59 +297,6 @@ h1, h2, h3, h4 { font-family: 'Sora', 'Inter', sans-serif; line-height: 1.1; let
 }
 
 /* -------------------------------------------------------------
-   Mobile hamburger + drawer (hidden on desktop)
-   ------------------------------------------------------------- */
-.nav-toggle {
-    display: none; /* desktop: hidden, mobile media query flips to flex */
-    position: relative; /* needed so z-index keeps the toggle above the drawer */
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    border-radius: 12px;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 5px;
-    transition: background 0.2s ease, border-color 0.2s ease;
-    z-index: 120;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-}
-.nav-toggle:hover { background: var(--surface-2); border-color: rgba(59, 130, 246, 0.35); }
-.nav-toggle-bar {
-    width: 18px;
-    height: 2px;
-    background: var(--text);
-    border-radius: 2px;
-    transition: transform 0.25s ease, opacity 0.2s ease;
-}
-.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(2) { opacity: 0; }
-.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-/* Click-catcher behind the open drawer.
-   No darkening of the page and no `backdrop-filter` — the user asked
-   for the page NOT to dim when the menu opens. We just need an
-   invisible layer that sits between the page and the drawer so taps
-   outside the drawer close it. */
-.nav-backdrop {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: transparent;
-    opacity: 0;
-    transition: opacity 0.25s ease;
-    z-index: 105;
-}
-.nav-backdrop.open {
-    display: block;
-    opacity: 1;
-}
-
-/* -------------------------------------------------------------
    Layout
    ------------------------------------------------------------- */
 .page {
@@ -372,32 +319,6 @@ body.is-landing {
     justify-content: center;
     padding-top: 12px;
     padding-bottom: 12px;
-}
-
-/* Body scroll-lock used while the mobile nav drawer is open. The
-   `position: fixed` trick keeps iOS from drifting and from collapsing
-   the URL bar, while preserving the user's scroll position via inline
-   `top` set in JS. */
-/* Drawer-open scroll lock.
-   We use plain `overflow: hidden` on <html> and <body> instead of
-   `position: fixed` on the body. `position: fixed` on the body is a
-   common scroll-lock trick, but on iOS it has a nasty side effect:
-   taps on links inside a `position: fixed` + transformed drawer can
-   stop dispatching default navigation, which is exactly what made
-   "the menu opens but links don't go anywhere" on phones. The
-   simpler overflow lock keeps every tap → navigate path intact. */
-html.nav-open,
-body.nav-open {
-    overflow: hidden;
-    overscroll-behavior: contain;
-}
-/* When the drawer is open, the sticky header's blur filter can stack
-   with the backdrop on iOS and leak onto the drawer, making the menu
-   text look out of focus. Drop the blur — the dark scrim already
-   provides plenty of separation. */
-body.nav-open .site-header {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
 }
 
 .section { padding: 90px 0; }
@@ -1311,114 +1232,54 @@ a.info-value:hover { color: var(--brand-2); }
     .nav-cta { padding: 8px 14px; font-size: 0.85rem; }
 }
 
-/* Tablet & smaller — switch to mobile drawer */
+/* Tablet & smaller — header wraps, nav becomes a compact inline row */
 @media (max-width: 768px) {
-    :root { --header-h: 68px; }
+    :root { --header-h: auto; }
 
     /* Tighter, mobile-native horizontal padding. Replaces the desktop
        max(24px, 4vw) so 320–768px viewports get a comfortable 16px
        gutter without feeling cramped or wasting screen real estate. */
     .page { padding: 0 16px; }
 
+    /* Header wraps into two rows on phones: brand on top, nav links
+       below. No drawer, no hamburger — the nav is always visible and
+       links navigate on the first tap. */
     .site-header {
         padding: 12px 16px;
-        flex-wrap: nowrap;
-        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px 14px;
+    }
+    .brand {
+        flex: 1 1 auto;
+        justify-content: flex-start;
     }
     .brand-text { font-size: 0.95rem; }
     .brand-mark { width: 36px; height: 36px; }
 
-    .nav-toggle { display: flex; }
-
-    /* Drawer — slides in from the right.
-       `background-color` is set as a SOLID fallback first, so even if
-       the linear-gradient fails to paint (older WebKits, weird stacking
-       contexts) the drawer is still fully opaque and the menu items
-       sit on a clean dark surface, not on top of the page. */
     .nav {
-        position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        height: 100vh;
-        height: 100dvh;
-        width: min(86vw, 340px);
-        display: flex;
-        flex-direction: column;
-        flex-wrap: nowrap;
-        align-items: stretch;
-        justify-content: flex-start;
-        gap: 6px;
-        padding: calc(var(--header-h) + 18px) 22px max(28px, env(safe-area-inset-bottom, 0));
-        background-color: #060b18;
-        background-image: linear-gradient(180deg, #0a1224 0%, #03060d 100%);
-        border-left: 1px solid var(--border);
-        box-shadow: -30px 0 80px rgba(0, 0, 0, 0.55);
-        transform: translateX(105%);
-        transition: transform 0.32s cubic-bezier(0.6, 0, 0.4, 1);
-        z-index: 110;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
-        /* Reset any inherited base-nav rules that don't apply here. */
-        flex-wrap: nowrap;
-        /* Own stacking context — guarantees the dark drawer paints on
-           top of the aurora and the page, never the other way round. */
-        isolation: isolate;
+        flex: 1 1 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px 10px;
     }
-    .nav.open { transform: translateX(0); }
-
-    /* Make absolutely sure every nav child is visible inside the drawer.
-       Above-the-fold reveal animations (.reveal class) shouldn't apply
-       to the drawer items — when the drawer first opens, they should
-       already be at full opacity. */
-    .nav > * {
-        opacity: 1 !important;
-        transform: none !important;
-    }
-
     .nav a {
-        position: relative;
-        font-size: 1.05rem;
-        padding: 14px 16px 14px 20px;
-        border-radius: 12px;
-        color: var(--text);
-        border: 1px solid transparent;
-        transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        font-size: 0.9rem;
+        padding: 6px 10px;
+        border-radius: 8px;
     }
-    .nav a:hover { background: var(--surface); border-color: var(--border); }
-
-    /* Active page in the mobile drawer: clearly distinct — colored
-       background, blue text, and a 3px accent bar on the left edge.
-       The desktop ::after underline indicator is hidden on mobile so
-       it doesn't sit floating between drawer rows. */
+    .nav a:hover { background: var(--surface); }
     .nav a.active {
-        background: rgba(59, 130, 246, 0.18);
-        border-color: rgba(59, 130, 246, 0.45);
+        background: rgba(59, 130, 246, 0.16);
         color: var(--brand-2);
         font-weight: 600;
     }
-    .nav a.active::before {
-        content: '';
-        position: absolute;
-        left: 6px;
-        top: 10px;
-        bottom: 10px;
-        width: 3px;
-        border-radius: 999px;
-        background: linear-gradient(180deg, var(--brand), var(--brand-2));
-        box-shadow: 0 0 12px var(--brand-glow);
-    }
+    /* The animated underline used on desktop sits awkwardly when the
+       row wraps, so hide it and let the background tint do the work. */
     .nav a.active::after { display: none; }
-
-    /* CTA gets full-width treatment at the bottom of the drawer */
     .nav-cta {
-        margin-top: 16px;
-        text-align: center;
-        padding: 14px 16px !important;
-        font-size: 0.95rem !important;
-        background: linear-gradient(120deg, var(--brand), var(--brand-2));
-        color: #02060f !important;
+        padding: 7px 14px !important;
+        font-size: 0.85rem !important;
     }
 
     /* On phones the landing flows naturally from the top — no forced
@@ -1471,13 +1332,12 @@ a.info-value:hover { color: var(--brand-2); }
     .stat strong     { font-size: 1.2rem; }
 }
 
-/* Phone — same drawer, just slightly tighter chrome */
+/* Phone — slightly tighter header chrome */
 @media (max-width: 560px) {
-    :root { --header-h: 60px; }
     .site-header { padding: 10px 14px; }
     .brand-text  { font-size: 0.9rem; }
     .brand-mark  { width: 32px; height: 32px; }
-    .nav-toggle  { width: 40px; height: 40px; }
+    .nav a       { font-size: 0.85rem; padding: 5px 9px; }
 
     .page-section   { padding: 36px 0 64px; }
     .page-hero      { padding: 32px 0; }
@@ -1522,7 +1382,8 @@ a.info-value:hover { color: var(--brand-2); }
     .page                  { padding: 0 14px; }
     .brand-text-soft       { display: none; }
     .brand-mark            { width: 30px; height: 30px; }
-    .nav-toggle            { width: 38px; height: 38px; }
+    .nav a                 { font-size: 0.82rem; padding: 5px 8px; }
+    .nav-cta               { padding: 6px 12px !important; font-size: 0.8rem !important; }
 
     .landing-inner         { gap: 8px; }
     .landing-role          { font-size: 0.88rem; }

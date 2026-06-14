@@ -17,19 +17,7 @@ $cls    = static fn (string $name): string => $active === $name ? ' class="activ
         </span>
     </a>
 
-    <button
-        type="button"
-        class="nav-toggle"
-        aria-label="Open menu"
-        aria-expanded="false"
-        aria-controls="primary-nav"
-        data-nav-toggle>
-        <span class="nav-toggle-bar"></span>
-        <span class="nav-toggle-bar"></span>
-        <span class="nav-toggle-bar"></span>
-    </button>
-
-    <nav id="primary-nav" class="nav" aria-label="Primary" data-nav>
+    <nav id="primary-nav" class="nav" aria-label="Primary">
         <a href="<?= $e($url('/')) ?>"<?= $cls('home') ?>>Home</a>
         <a href="<?= $e($url('about')) ?>"<?= $cls('about') ?>>About</a>
         <a href="<?= $e($url('skills')) ?>"<?= $cls('skills') ?>>Skills</a>
@@ -37,5 +25,3 @@ $cls    = static fn (string $name): string => $active === $name ? ' class="activ
         <a href="<?= $e($url('contact')) ?>" class="nav-cta<?= $active === 'contact' ? ' active' : '' ?>">Get in touch</a>
     </nav>
 </header>
-
-<div class="nav-backdrop" data-nav-backdrop aria-hidden="true"></div>
