@@ -872,8 +872,14 @@ body.is-landing {
     color: var(--muted);
     max-width: 560px;
     font-size: clamp(0.92rem, 1.5vw, 1.02rem);
+    text-wrap: pretty;
 }
 .landing-tagline strong { color: var(--text); font-weight: 600; }
+/* Manual line break that only kicks in on phones — desktop keeps the
+   sentence flowing on one or two natural lines, mobile splits it
+   cleanly after "Takoradi Technical University," so the second clause
+   starts on its own line and never runs to the screen edge. */
+.brk-mobile { display: none; }
 
 .landing-actions {
     display: flex;
@@ -1313,7 +1319,13 @@ a.info-value:hover { color: var(--brand-2); }
        to the edges, regardless of font fallback. */
     .landing-title        { font-size: clamp(1.5rem, 7vw, 2.4rem); padding: 0; }
     .landing-role         { font-size: clamp(0.9rem, 3.6vw, 1.05rem); }
-    .landing-tagline      { font-size: clamp(0.85rem, 3.6vw, 0.98rem); max-width: 100%; }
+    .landing-tagline      {
+        font-size: clamp(0.85rem, 3.6vw, 0.98rem);
+        max-width: 32ch;       /* ~32 characters — wraps after the first clause cleanly */
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .brk-mobile { display: inline; }
     .landing-socials      { gap: 6px; }
 
     /* The rest of the small-screen tuning */

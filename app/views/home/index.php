@@ -34,7 +34,7 @@
         <p class="landing-role"><?= $e($profile['role']) ?></p>
 
         <p class="landing-tagline">
-            Final year Computer Science student at <strong>Takoradi Technical University</strong>,
+            Final year Computer Science student at <strong>Takoradi Technical University</strong>,<br class="brk-mobile">
             turning data into insight and ideas into modern web experiences.
         </p>
 
