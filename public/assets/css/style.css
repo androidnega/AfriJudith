@@ -324,16 +324,16 @@ h1, h2, h3, h4 { font-family: 'Sora', 'Inter', sans-serif; line-height: 1.1; let
 .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(2) { opacity: 0; }
 .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* Dimmed scrim behind the open drawer.
-   We deliberately do NOT use `backdrop-filter: blur` here — on iOS
-   Safari (and some Android WebViews) the blur can leak onto the drawer
-   itself, making the menu text look out of focus. A simple opaque dark
-   overlay is reliable everywhere. */
+/* Click-catcher behind the open drawer.
+   No darkening of the page and no `backdrop-filter` — the user asked
+   for the page NOT to dim when the menu opens. We just need an
+   invisible layer that sits between the page and the drawer so taps
+   outside the drawer close it. */
 .nav-backdrop {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(2, 6, 13, 0.72);
+    background: transparent;
     opacity: 0;
     transition: opacity 0.25s ease;
     z-index: 105;
@@ -1365,19 +1365,38 @@ a.info-value:hover { color: var(--brand-2); }
     }
 
     .nav a {
+        position: relative;
         font-size: 1.05rem;
-        padding: 14px 16px;
+        padding: 14px 16px 14px 20px;
         border-radius: 12px;
         color: var(--text);
         border: 1px solid transparent;
         transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     }
     .nav a:hover { background: var(--surface); border-color: var(--border); }
+
+    /* Active page in the mobile drawer: clearly distinct — colored
+       background, blue text, and a 3px accent bar on the left edge.
+       The desktop ::after underline indicator is hidden on mobile so
+       it doesn't sit floating between drawer rows. */
     .nav a.active {
-        background: var(--brand-soft);
-        border-color: rgba(59, 130, 246, 0.25);
+        background: rgba(59, 130, 246, 0.18);
+        border-color: rgba(59, 130, 246, 0.45);
         color: var(--brand-2);
+        font-weight: 600;
     }
+    .nav a.active::before {
+        content: '';
+        position: absolute;
+        left: 6px;
+        top: 10px;
+        bottom: 10px;
+        width: 3px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, var(--brand), var(--brand-2));
+        box-shadow: 0 0 12px var(--brand-glow);
+    }
+    .nav a.active::after { display: none; }
 
     /* CTA gets full-width treatment at the bottom of the drawer */
     .nav-cta {
@@ -1409,10 +1428,18 @@ a.info-value:hover { color: var(--brand-2); }
         padding: 84px 0 56px;
     }
     .landing              { display: block; }
-    .landing-inner        { gap: 16px; margin: 0 auto; }
+    /* Inner column gets its own horizontal padding so the title and
+       tagline never touch the screen edges — they wrap inside a
+       comfortable reading column instead. */
+    .landing-inner        { gap: 16px; margin: 0 auto; padding: 0 12px; }
     /* Bigger, more confident logo on phones. */
     .landing-logo-stage   { width: clamp(200px, 56vw, 280px); margin-bottom: 6px; }
-    .landing-tagline      { font-size: 0.95rem; max-width: 100%; }
+    /* Fluid title with a small floor and a fluid ceiling that only
+       depends on viewport width — wraps naturally instead of pushing
+       to the edges, regardless of font fallback. */
+    .landing-title        { font-size: clamp(1.5rem, 7vw, 2.4rem); padding: 0; }
+    .landing-role         { font-size: clamp(0.9rem, 3.6vw, 1.05rem); }
+    .landing-tagline      { font-size: clamp(0.85rem, 3.6vw, 0.98rem); max-width: 100%; }
     .landing-socials      { gap: 6px; }
 
     /* The rest of the small-screen tuning */
