@@ -51,9 +51,21 @@ abstract class Controller
         $base = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '')), '/');
 
         // Expose helpers + config to every view.
+        // asset() appends ?v=<mtime> for hashable assets (css/js/images) so
+        // long-cached browser copies are invalidated the instant we deploy a
+        // new build. Falls back to a no-query URL when the file is missing.
+        $assetRoot = PUBLIC_PATH . '/assets/';
         $data['app']    = $this->config['app']  ?? [];
         $data['base']   = $base;
-        $data['asset']  = static fn (string $p) => $base . '/public/assets/' . ltrim($p, '/');
+        $data['asset']  = static function (string $p) use ($base, $assetRoot): string {
+            $rel  = ltrim($p, '/');
+            $url  = $base . '/public/assets/' . $rel;
+            $file = $assetRoot . $rel;
+            if (is_file($file)) {
+                $url .= '?v=' . filemtime($file);
+            }
+            return $url;
+        };
         $data['url']    = static fn (string $p = '') => $base . '/' . ltrim($p, '/');
         $data['e']      = static fn ($v) => htmlspecialchars((string) $v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
