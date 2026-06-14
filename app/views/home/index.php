@@ -38,12 +38,6 @@
             turning data into insight and ideas into modern web experiences.
         </p>
 
-        <div class="landing-actions">
-            <a href="<?= $e($url('about')) ?>" class="btn btn-primary">About me</a>
-            <a href="<?= $e($url('work')) ?>" class="btn btn-ghost">View work</a>
-            <a href="<?= $e($url('contact')) ?>" class="btn btn-ghost">Contact</a>
-        </div>
-
         <ul class="landing-socials" aria-label="Social links">
             <?php foreach ($socials as $s): ?>
                 <li>
