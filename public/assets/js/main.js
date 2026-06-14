@@ -22,15 +22,40 @@
     const backdrop = document.querySelector('[data-nav-backdrop]');
 
     if (toggle && nav) {
-        const setOpen = (open) => {
-            nav.classList.toggle('open', open);
-            backdrop && backdrop.classList.toggle('open', open);
-            document.body.classList.toggle('nav-open', open);
-            toggle.setAttribute('aria-expanded', String(open));
-            toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        const body = document.body;
+        let lockedScrollY = 0;
+
+        // The CSS pins `body { position: fixed }` while the drawer is
+        // open so iOS Safari doesn't bounce or collapse the URL bar.
+        // To keep the page from jumping to the top, we stash the scroll
+        // offset and restore it when the drawer closes.
+        const lockBodyScroll = () => {
+            lockedScrollY = window.scrollY || window.pageYOffset || 0;
+            body.style.top = `-${lockedScrollY}px`;
+            body.classList.add('nav-open');
         };
 
-        toggle.addEventListener('click', () => {
+        const unlockBodyScroll = () => {
+            body.classList.remove('nav-open');
+            body.style.top = '';
+            window.scrollTo(0, lockedScrollY);
+        };
+
+        const setOpen = (open) => {
+            const isOpen = nav.classList.contains('open');
+            if (open === isOpen) return;
+
+            nav.classList.toggle('open', open);
+            backdrop && backdrop.classList.toggle('open', open);
+            toggle.setAttribute('aria-expanded', String(open));
+            toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+
+            if (open) lockBodyScroll();
+            else      unlockBodyScroll();
+        };
+
+        toggle.addEventListener('click', (e) => {
+            e.preventDefault();
             setOpen(!nav.classList.contains('open'));
         });
 
@@ -44,7 +69,8 @@
             if (e.key === 'Escape' && nav.classList.contains('open')) setOpen(false);
         });
 
-        // Snap closed when crossing back into desktop layout
+        // Snap closed when crossing back into desktop layout so the
+        // body lock + transform aren't left dangling on resize.
         const mql = window.matchMedia('(min-width: 769px)');
         const onChange = (e) => { if (e.matches) setOpen(false); };
         mql.addEventListener ? mql.addEventListener('change', onChange) : mql.addListener(onChange);

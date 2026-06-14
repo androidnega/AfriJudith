@@ -253,8 +253,9 @@ h1, h2, h3, h4 { font-family: 'Sora', 'Inter', sans-serif; line-height: 1.1; let
    ------------------------------------------------------------- */
 .nav-toggle {
     display: none; /* desktop: hidden, mobile media query flips to flex */
-    width: 42px;
-    height: 42px;
+    position: relative; /* needed so z-index keeps the toggle above the drawer */
+    width: 44px;
+    height: 44px;
     padding: 0;
     border: 1px solid var(--border);
     background: var(--surface);
@@ -265,7 +266,9 @@ h1, h2, h3, h4 { font-family: 'Sora', 'Inter', sans-serif; line-height: 1.1; let
     flex-direction: column;
     gap: 5px;
     transition: background 0.2s ease, border-color 0.2s ease;
-    z-index: 110;
+    z-index: 120;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 .nav-toggle:hover { background: var(--surface-2); border-color: rgba(59, 130, 246, 0.35); }
 .nav-toggle-bar {
@@ -288,7 +291,7 @@ h1, h2, h3, h4 { font-family: 'Sora', 'Inter', sans-serif; line-height: 1.1; let
     -webkit-backdrop-filter: blur(4px);
     opacity: 0;
     transition: opacity 0.25s ease;
-    z-index: 95;
+    z-index: 105;
 }
 .nav-backdrop.open {
     display: block;
@@ -304,7 +307,7 @@ h1, h2, h3, h4 { font-family: 'Sora', 'Inter', sans-serif; line-height: 1.1; let
     padding: 0 max(24px, 4vw);
 }
 
-/* Landing variant: pin the viewport, no page scroll. */
+/* Landing variant: pin the viewport on desktop/tablet (no page scroll). */
 body.is-landing {
     height: 100vh;
     height: 100dvh;
@@ -318,6 +321,17 @@ body.is-landing {
     justify-content: center;
     padding-top: 12px;
     padding-bottom: 12px;
+}
+
+/* Body scroll-lock used while the mobile nav drawer is open. The
+   `position: fixed` trick keeps iOS from drifting and from collapsing
+   the URL bar, while preserving the user's scroll position via inline
+   `top` set in JS. */
+body.nav-open {
+    position: fixed;
+    inset-inline: 0;
+    width: 100%;
+    overflow: hidden;
 }
 
 .section { padding: 90px 0; }
@@ -1201,7 +1215,16 @@ a.info-value:hover { color: var(--brand-2); }
     .contact-card    { grid-template-columns: 1fr; padding: 32px; }
     .page-hero-grid  { grid-template-columns: 1fr; gap: 36px; align-items: start; }
     .about-aside     { order: -1; height: auto; }
-    .about-portrait  { aspect-ratio: 4 / 3; min-height: 0; flex: 0 0 auto; }
+    /* Portrait orientation matching the source image (which is roughly
+       square). Avoids the previous 4/3 box that stretched the image
+       horizontally on smaller screens. */
+    .about-portrait  {
+        aspect-ratio: 1 / 1;
+        min-height: 0;
+        flex: 0 0 auto;
+        max-width: 460px;
+        margin: 0 auto;
+    }
     .contact-grid    { grid-template-columns: 1fr; }
 }
 
@@ -1240,15 +1263,17 @@ a.info-value:hover { color: var(--brand-2); }
         flex-wrap: nowrap;
         align-items: stretch;
         justify-content: flex-start;
-        gap: 4px;
-        padding: 88px 22px 32px;
+        gap: 6px;
+        padding: calc(var(--header-h) + 18px) 22px max(28px, env(safe-area-inset-bottom, 0));
         background: linear-gradient(180deg, #060b18 0%, #03060d 100%);
         border-left: 1px solid var(--border);
         box-shadow: -30px 0 80px rgba(0, 0, 0, 0.55);
         transform: translateX(105%);
         transition: transform 0.32s cubic-bezier(0.6, 0, 0.4, 1);
-        z-index: 100;
+        z-index: 110;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
     }
     .nav.open { transform: translateX(0); }
 
@@ -1277,10 +1302,29 @@ a.info-value:hover { color: var(--brand-2); }
         color: #02060f !important;
     }
 
-    /* Stop body scroll when the drawer is open */
-    body.nav-open { overflow: hidden; }
+    /* On phones the landing must be allowed to scroll if content
+       (logo + title + tagline + 5 social pills) is taller than the
+       viewport. We drop the rigid 100dvh height pin and let it grow. */
+    body.is-landing {
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+    .page-landing {
+        height: auto;
+        min-height: calc(100dvh - var(--header-h));
+        padding-top: 28px;
+        padding-bottom: 36px;
+    }
+    .landing-inner       { gap: 14px; }
+    .landing-logo-stage  { width: clamp(150px, 38vw, 200px); margin-bottom: 4px; }
+    .landing-title       { font-size: clamp(1.9rem, 6.5vw, 2.6rem); }
+    .landing-tagline     { font-size: 0.95rem; max-width: 92%; }
+    .landing-socials     { gap: 6px; }
 
-    /* The rest of the small-screen tuning (was the .nav block, kept) */
+    /* The rest of the small-screen tuning */
     .section         { padding: 64px 0; }
     .page-section    { padding: 48px 0 80px; }
     .hero            { padding: 36px 0; }
@@ -1322,11 +1366,25 @@ a.info-value:hover { color: var(--brand-2); }
     .work-body h3   { font-size: 0.95rem; }
     .work-body p    { font-size: 0.82rem; -webkit-line-clamp: 4; }
 
+    /* Portrait: phones get a vertical-friendly card so the photo
+       reads naturally and doesn't look squashed sideways. */
+    .about-portrait {
+        aspect-ratio: 4 / 5;
+        max-width: 100%;
+        border-radius: 18px;
+    }
+
     .landing-inner       { gap: 10px; }
     .landing-title       { font-size: clamp(1.55rem, 7vw, 2.1rem); }
     .landing-tagline     { font-size: 0.85rem; }
     .landing-actions .btn{ padding: 10px 16px; font-size: 0.85rem; }
     .footer-inner p      { font-size: 0.78rem; }
+
+    .page-hero-grid      { gap: 26px; }
+    .page-title          { font-size: clamp(1.7rem, 7vw, 2.3rem); margin: 10px 0 12px; }
+    .page-lead           { font-size: 0.95rem; }
+    .hero-actions        { gap: 10px; }
+    .hero-actions .btn   { flex: 1 1 auto; justify-content: center; }
 }
 
 /* Tiny phones */
@@ -1336,14 +1394,16 @@ a.info-value:hover { color: var(--brand-2); }
     .nav-toggle      { width: 38px; height: 38px; }
 }
 
-/* Short / landscape phone — pack the landing tighter */
-@media (max-height: 720px) {
+/* Short / landscape — pack the landing tighter. Scoped to
+   `orientation: landscape` so portrait phones (which can scroll
+   thanks to the mobile fix above) still show the full hero. */
+@media (max-height: 720px) and (orientation: landscape) {
     .landing-inner       { gap: 6px; }
     .landing-logo-stage  { width: clamp(120px, 18vh, 170px); margin-bottom: 0; }
     .landing-title       { font-size: clamp(1.5rem, 4vw, 2.2rem); }
     .landing-tagline     { display: none; }
 }
-@media (max-height: 540px) {
+@media (max-height: 540px) and (orientation: landscape) {
     .landing-logo-stage  { width: clamp(96px, 14vh, 130px); }
     .landing-role        { font-size: 0.85rem; }
     .pill                { padding: 4px 10px; font-size: 0.7rem; }
