@@ -48,14 +48,15 @@
         </div>
 
         <aside class="about-aside">
-            <div class="about-logo">
-                <span class="ring ring-1"></span>
-                <span class="ring ring-2"></span>
-                <img src="<?= $e($asset('img/judith-afriyie-logo.png')) ?>"
-                     alt="Judith Afriyie — Data Analyst & Web Developer"
-                     width="320" height="320"
-                     class="logo-art">
-            </div>
+            <figure class="about-portrait">
+                <img src="<?= $e($asset('img/judith-afriyie-portrait.jpg')) ?>"
+                     alt="Judith Afriyie working in class — Computer Science student at Takoradi Technical University"
+                     width="900" height="838"
+                     loading="lazy">
+                <figcaption>
+                    <span class="portrait-badge"><i class="fa-solid fa-circle" aria-hidden="true"></i> Final year &middot; TTU</span>
+                </figcaption>
+            </figure>
             <div class="stats">
                 <?php foreach ($stats as $st): ?>
                     <div class="stat">
