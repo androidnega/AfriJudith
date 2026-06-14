@@ -19,7 +19,6 @@ final class AboutController extends Controller
             'pageTitle' => 'About — Judith Afriyie',
             'activeNav' => 'about',
             'profile'   => $profile->get(),
-            'stats'     => $profile->stats(),
         ]);
     }
 }

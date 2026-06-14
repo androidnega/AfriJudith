@@ -1,7 +1,6 @@
 <?php
 /**
  * @var array    $profile
- * @var array    $stats
  * @var callable $asset
  * @var callable $url
  * @var callable $e
@@ -57,14 +56,6 @@
                     <span class="portrait-badge"><i class="fa-solid fa-circle" aria-hidden="true"></i> Final year &middot; TTU</span>
                 </figcaption>
             </figure>
-            <div class="stats">
-                <?php foreach ($stats as $st): ?>
-                    <div class="stat">
-                        <strong><?= $e($st['value']) ?></strong>
-                        <span><?= $e($st['label']) ?></span>
-                    </div>
-                <?php endforeach; ?>
-            </div>
         </aside>
     </div>
 </section>
