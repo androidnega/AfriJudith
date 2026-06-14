@@ -24,6 +24,20 @@ define('PUBLIC_PATH', APP_ROOT . '/public');
 require_once APP_PATH . '/core/Autoloader.php';
 \App\Core\Autoloader::register();
 
+// Session: needed for the contact form CAPTCHA & rate limiter.
+// Started only for real HTTP requests so CLI tools (lint, etc.) stay quiet.
+if (PHP_SAPI !== 'cli' && session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path'     => '/',
+        'secure'   => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+    session_name('AFRIJUDITH');
+    session_start();
+}
+
 $config = require APP_ROOT . '/config/config.php';
 
 $app = new \App\Core\App($config);

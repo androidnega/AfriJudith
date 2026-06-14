@@ -1049,6 +1049,32 @@ a.info-value:hover { color: var(--brand-2); }
     pointer-events: none;
 }
 
+/* Math captcha row */
+.contact-form .captcha {
+    background: rgba(56, 189, 248, 0.05);
+    border: 1px dashed rgba(56, 189, 248, 0.28);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.contact-form .captcha > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted-1);
+    font-size: 0.85rem;
+}
+.contact-form .captcha > span i { color: var(--brand-2); }
+.contact-form .captcha > span strong {
+    color: var(--text);
+    letter-spacing: 0.2px;
+}
+.contact-form .captcha input {
+    max-width: 200px;
+}
+
 /* -------------------------------------------------------------
    Responsive — mobile-first stepwise enhancements
    ------------------------------------------------------------- */

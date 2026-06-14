@@ -5,6 +5,7 @@
  * @var array    $errors
  * @var bool     $sent
  * @var array    $old
+ * @var string   $captchaQuestion
  * @var callable $url
  * @var callable $e
  */
@@ -110,6 +111,23 @@ $err = static fn (string $k): string => isset($errors[$k]) ? $errors[$k] : '';
                     <input type="text" name="website" tabindex="-1" autocomplete="off">
                 </label>
             </div>
+
+            <label class="captcha">
+                <span>
+                    <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                    Quick check &mdash; <strong><?= $e($captchaQuestion) ?></strong>
+                </span>
+                <input
+                    type="text"
+                    name="captcha"
+                    inputmode="numeric"
+                    pattern="-?[0-9]+"
+                    autocomplete="off"
+                    placeholder="Your answer"
+                    class="<?= $err('captcha') !== '' ? 'is-error' : '' ?>"
+                    required>
+                <?php if ($err('captcha')): ?><small class="field-error"><?= $e($err('captcha')) ?></small><?php endif; ?>
+            </label>
 
             <button type="submit" class="btn btn-primary btn-lg">Send message</button>
             <p class="form-note">Or email me directly at <a href="mailto:<?= $e($profile['email']) ?>"><?= $e($profile['email']) ?></a>.</p>
