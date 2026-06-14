@@ -5,7 +5,7 @@
 /** @var callable $e */
 $title     = $pageTitle ?? ($app['name'] ?? 'AfriJudith.online');
 $bodyClass = $bodyClass ?? '';
-$isLanding = str_contains($bodyClass, 'is-landing');
+$isLanding = strpos($bodyClass, 'is-landing') !== false;
 ?><!DOCTYPE html>
 <html lang="en">
 <head>

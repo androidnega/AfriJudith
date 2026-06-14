@@ -23,7 +23,9 @@ final class Autoloader
 
     public static function load(string $class): void
     {
-        if (!str_starts_with($class, 'App\\')) {
+        // Works on PHP 7.4+ — avoids str_starts_with (8.0+) so the
+        // app boots even on older shared-hosting PHP defaults.
+        if (strncmp($class, 'App\\', 4) !== 0) {
             return;
         }
 
