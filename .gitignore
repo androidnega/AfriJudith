@@ -1,0 +1,38 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*.sublime-*
+
+# PHP / Composer (kept for future use)
+/vendor/
+composer.lock
+composer.phar
+
+# Local env / secrets
+.env
+.env.*
+!.env.example
+config/local.php
+
+# Logs & tmp
+*.log
+logs/
+storage/
+cache/
+tmp/
+
+# Build artefacts
+node_modules/
+dist/
+build/
+
+# Misc working files
+_debug.html
+_inspect.html
+*.bak
+*.orig
+*.tmp
