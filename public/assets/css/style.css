@@ -324,13 +324,16 @@ h1, h2, h3, h4 { font-family: 'Sora', 'Inter', sans-serif; line-height: 1.1; let
 .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(2) { opacity: 0; }
 .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
+/* Dimmed scrim behind the open drawer.
+   We deliberately do NOT use `backdrop-filter: blur` here — on iOS
+   Safari (and some Android WebViews) the blur can leak onto the drawer
+   itself, making the menu text look out of focus. A simple opaque dark
+   overlay is reliable everywhere. */
 .nav-backdrop {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(2, 6, 13, 0.55);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    background: rgba(2, 6, 13, 0.72);
     opacity: 0;
     transition: opacity 0.25s ease;
     z-index: 105;
@@ -374,6 +377,14 @@ body.nav-open {
     inset-inline: 0;
     width: 100%;
     overflow: hidden;
+}
+/* When the drawer is open, the sticky header's blur filter can stack
+   with the backdrop on iOS and leak onto the drawer, making the menu
+   text look out of focus. Drop the blur — the dark scrim already
+   provides plenty of separation. */
+body.nav-open .site-header {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 .section { padding: 90px 0; }
@@ -1393,9 +1404,9 @@ a.info-value:hover { color: var(--brand-2); }
         display: block;
         height: auto;
         min-height: 0;
-        /* Comfortable breathing room above the hero so it doesn't sit
-           glued to the header on tall phones. */
-        padding: 56px 0 48px;
+        /* Generous breathing room above the hero so the logo never
+           crowds the sticky header on tall phones. */
+        padding: 84px 0 56px;
     }
     .landing              { display: block; }
     .landing-inner        { gap: 16px; margin: 0 auto; }
